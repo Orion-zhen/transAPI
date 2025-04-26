@@ -22,7 +22,6 @@ class InferenceEngine:
         *args,
         **kwargs,
     ):
-        oom = False
         try:
             return self.model.generate(
                 use_model_defaults=True,
@@ -34,11 +33,14 @@ class InferenceEngine:
             )
         except torch.cuda.OutOfMemoryError as e:
             self.logger.warning(f"OOM error during generation: {e}")
-            oom = True
-        if oom:
             torch.cuda.empty_cache()
             kwargs["cache_implementation"] = "offloaded"
-            return self.model.generate(use_model_defaults=True, *args, **kwargs)
+            try:
+                return self.model.generate(use_model_defaults=True, *args, **kwargs)
+            except Exception as e:
+                raise RuntimeError(e)
+        except Exception as e:
+            raise RuntimeError(e)
 
     def is_multimodal(
         self, conversation: list[dict[str, str]] | list[list[dict[str, str]]]
@@ -70,28 +72,24 @@ class InferenceEngine:
         return_dict: bool = False,
         **kwargs,
     ) -> str | list[int] | dict | list[str] | list[list[int]] | BatchEncoding:
-        if not self.is_multimodal(conversation=conversation):
-            return self.tokenizer.apply_chat_template(
-                conversation=conversation,
-                add_generation_prompt=add_generation_prompt,
-                tokenize=tokenize,
-                add_special_tokens=add_special_tokens,
-                return_dict=return_dict,
-                **kwargs,
-            )
+        if self.is_multimodal(conversation=conversation):
+            # for multimodal inputs
+            try:
+                return self.processor.apply_chat_template(
+                    conversation=conversation,
+                    add_generation_prompt=add_generation_prompt,
+                    tokenize=tokenize,
+                    add_special_tokens=add_special_tokens,
+                    return_dict=return_dict,
+                    **kwargs,
+                )
+            except Exception:
+                self.logger.warning(
+                    "Failed apply multimodal template, try to apply in text-only"
+                )
 
-        # for multimodal inputs
-        try:
-            return self.processor.apply_chat_template(
-                conversation=conversation,
-                add_generation_prompt=add_generation_prompt,
-                tokenize=tokenize,
-                add_special_tokens=add_special_tokens,
-                return_dict=return_dict,
-                **kwargs,
-            )
         # keep text-only tokenizer as a fallback
-        except Exception:
+        try:
             return self.tokenizer.apply_chat_template(
                 conversation=conversation,
                 add_generation_prompt=add_generation_prompt,
@@ -100,6 +98,8 @@ class InferenceEngine:
                 return_dict=return_dict,
                 **kwargs,
             )
+        except Exception as e:
+            raise RuntimeError from e
 
     def generate_completions(
         self,
