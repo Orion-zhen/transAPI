@@ -23,6 +23,8 @@ git clone https://github.com/Orion-zhen/transAPI.git && cd transAPI
 pip install -e .
 ```
 
+Or use `pip install -e ".[extra]"` for extra functions, including vision support.
+
 **Copy default config and modify it**:
 
 ```shell
@@ -39,6 +41,7 @@ python main.py
 
 - [x] OpenAI compatible API
 - [x] Native integration with Transformers
+- [x] Native multimodal support (Text-to-Text and Image-Text-to-Text)
 - [x] Reverse proxy support (e.g. Nginx)
 - [x] Multiple sampling strategies including [beam search](https://huggingface.co/docs/transformers/main/en/generation_strategies#beam-search)
 - [x] `torch.compile` for faster inference
