@@ -22,3 +22,6 @@ dependencies = [
     "transformers",
     "uvicorn",
 ]
+
+[project.optional-dependencies]
+extra = ["blobfile", "tiktoken", "torchvision"]
