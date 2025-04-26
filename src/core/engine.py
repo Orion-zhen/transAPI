@@ -28,6 +28,7 @@ class InferenceEngine:
                 use_model_defaults=True,
                 generation_config=generation_config,
                 streamer=streamer,
+                tokenizer=self.tokenizer,
                 *args,
                 **kwargs,
             )
