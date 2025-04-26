@@ -1,0 +1,41 @@
+server:
+  # Server Host
+  # Set "0.0.0.0" for local network access
+  host: "127.0.0.1"
+  # Server Port
+  port: 8000
+  # Server Root Path
+  # Useful if your server is behind a reverse proxy
+  # e.g. "/api"
+  root_path: ""
+  # Models to display in `/v1/models`
+  served_model_names:
+    - "gpt-3.5-turbo"
+    - "gpt-4o"
+
+model:
+  # Model Path, huggingface model id or a local path
+  model_path: "Qwen/Qwen2.5-0.5B-Instruct"
+  # device to use for inference
+  device: "auto"
+  # precision to use for inference
+  precision: "bfloat16"
+
+  # BitsAndBytes in-flight quantization config
+  # If your model is already quantized, keep it with `false` and `false`
+  quantization:
+    bnb_4bit: false
+    bnb_8bit: false
+
+log:
+  level: info
+  prompt: false
+  params: false
+  completions: false
+
+cors:
+  enabled: false
+  allow_origins: ["*"]
+  allow_credentials: true
+  allow_methods: ["*"]
+  allow_headers: ["*"]
