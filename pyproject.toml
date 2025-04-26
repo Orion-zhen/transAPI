@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "transapi"
+version = "0.1.0"
+description = "OpenAI compatible API PURELY based on Transformers"
+authors = [{ name = "Orion" }]
+maintainers = [{ name = "Orion" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+keywords = ["OpenAI", "API", "Transformers", "LLM"]
+requires-python = ">=3.9"
+dependencies = [
+    "accelerate",
+    "bitsandbytes; platform_system == 'Linux'",
+    "fastapi",
+    "hf-xet",
+    "pyyaml",
+    "torch",
+    "transformers",
+    "uvicorn",
+]
