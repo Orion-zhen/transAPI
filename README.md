@@ -2,6 +2,8 @@
 
 An OpenAI compatible API **purely** based on Transformers.
 
+> **Purely** means the inference engine backend only relies on Transformers. The project uses fastAPI for API server hosting.
+
 Existing LLM inference engines like [vLLM](https://docs.vllm.ai/en/latest/) and [HuggingFace TGI](https://huggingface.co/docs/text-generation-inference/index) support many popular models, but some models still lack support. These unsupported models might also not be available through [GGUF](https://github.com/ggml-org/llama.cpp). To solve this, I built this project. It offers an OpenAI compatible API based entirely on Transformers, allowing you to run and test any model compatible with Transformers.
 
 > [!NOTE]
