@@ -40,6 +40,27 @@ class InferenceEngine:
             kwargs["cache_implementation"] = "offloaded"
             return self.model.generate(use_model_defaults=True, *args, **kwargs)
 
+    def is_multimodal(
+        self, conversation: list[dict[str, str]] | list[list[dict[str, str]]]
+    ) -> bool:
+        return any(
+            isinstance(
+                msg.get("content"), list
+            )  # Check if 'content' exists and is a list
+            and any(
+                isinstance(item, dict)
+                and item.get("type")
+                in [
+                    "image",
+                    "video",
+                ]  # Check if item is dict and has type 'image' or 'video'
+                for item in msg["content"]  # Iterate through content list if it exists
+            )
+            # This part assumes msg is a dictionary in the outer list
+            for msg in conversation
+            if isinstance(msg, dict) and "content" in msg
+        )
+
     def apply_chat_template(
         self,
         conversation: list[dict[str, str]] | list[list[dict[str, str]]],
@@ -49,6 +70,17 @@ class InferenceEngine:
         return_dict: bool = False,
         **kwargs,
     ) -> str | list[int] | dict | list[str] | list[list[int]] | BatchEncoding:
+        if not self.is_multimodal(conversation=conversation):
+            return self.tokenizer.apply_chat_template(
+                conversation=conversation,
+                add_generation_prompt=add_generation_prompt,
+                tokenize=tokenize,
+                add_special_tokens=add_special_tokens,
+                return_dict=return_dict,
+                **kwargs,
+            )
+
+        # for multimodal inputs
         try:
             return self.processor.apply_chat_template(
                 conversation=conversation,
@@ -58,6 +90,7 @@ class InferenceEngine:
                 return_dict=return_dict,
                 **kwargs,
             )
+        # keep text-only tokenizer as a fallback
         except Exception:
             return self.tokenizer.apply_chat_template(
                 conversation=conversation,
