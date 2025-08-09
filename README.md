@@ -1,5 +1,8 @@
 # TransAPI
 
+> [!NOTE]
+> Please consider [transformers serve](https://huggingface.co/docs/transformers/main/serving) first.
+
 An OpenAI compatible API **purely** based on Transformers.
 
 > **Purely** means the inference engine backend only relies on Transformers. The project uses fastAPI for API server hosting.
